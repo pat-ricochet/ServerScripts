@@ -33,6 +33,8 @@ http = urllib3.PoolManager()
 # Need to set PATH for cron
 os.environ["PATH"] = "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 
+myBotList = "Gemini\/2\.0|Hakai\/2\.0|Alprazolam\/2\.0|Wget\/1\.13\.4"
+
 defaultFilterFile = "/etc/fail2ban/filter.d/apache-badbots.conf"
 updatedFilterFile = "/etc/fail2ban/filter.d/apache-badbots.local"
 ultimateBBBurl = "https://raw.githubusercontent.com/mitchellkrogza/apache-ultimate-bad-bot-blocker/master/_generator_lists/bad-user-agents.list"
@@ -61,6 +63,10 @@ for line in ubbbFileContents.get_text().split("\n"):
     line = re.escape(line)
     if line:
         newBots = newBots+"|"+line
-updateBotsFile(defaultFilterFile, newBots)
 
-return_code = subprocess.call(['service', 'fail2ban', 'restart'])
+if myBotList:
+    newBots = newBots+"|"+myBotList
+
+if newBots:
+    updateBotsFile(defaultFilterFile, newBots)
+    return_code = subprocess.call(['service', 'fail2ban', 'restart'])
